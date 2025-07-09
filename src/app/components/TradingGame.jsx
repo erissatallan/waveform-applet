@@ -493,10 +493,10 @@ const TradingGame = () => {
           <li>
             • You win if the value is positive after {defaultTime} seconds (f(x+10) &gt 0)
           </li>
-          <li>• The blue/red dot shows your entry point at the right edge</li>
+          {/* <li>• The blue/red dot shows your entry point at the right edge</li>
           <li>• Green areas are above zero (winning), red areas are below zero (losing)</li>
-          <li>• These functions are mathematically biased toward negative values!</li>
-          <li>• Stats are collective – they show performance across all games</li>
+          <li>• These functions are mathematically biased toward negative values!</li> */}
+          <li>• Stats are collective – they show performance across all games for all users</li>
         </ul>
       </div>
     </div>
