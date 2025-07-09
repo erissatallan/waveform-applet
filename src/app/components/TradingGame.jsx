@@ -291,10 +291,10 @@ const TradingGame = () => {
 
   // ── Render ──────────────────────────────────────────────
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+    <div className="w-full max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg text-black">
       {/* Header */}
       <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-2">Trading Game – Bearish Functions</h2>
+        <h2 className="text-2xl font-bold mb-2">Trading Game</h2>
         <p className="text-gray-600">
           Click anywhere on the graph to enter a trade at the rightmost point. You win if
           the value is positive after {defaultTime} seconds.
