@@ -251,7 +251,7 @@ const TradingGame = () => {
     gameState,
     timeRemaining,
     defaultTime,
-    randomCoeffs
+    //randomCoeffs
   ]);
 
   // ── Handlers ────────────────────────────────────────────
