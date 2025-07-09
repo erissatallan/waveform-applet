@@ -1,9 +1,19 @@
-    'use client'
+'use client'
 // components/TradingGame.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw, Settings } from 'lucide-react';
 
 const API = '/api/stats';
+
+// ── Helpers & Random Coeffs ─────────────────────────────
+  const generateRandomCoeffs = () => ({
+    // amplitude ∈ [1.0, 1.8] instead of [1.0,2.0]
+    amp: Math.random() * 0.8 + 1.0,
+    c1: Math.random() * 2 - 1,
+    c2: Math.random() * 2 - 1,
+    c3: Math.random() * 2 - 1,
+    shift: Math.random() * 0.4 - 0.2
+  });
 
 // Map each completed 2π‐period index → its own random coeffs
 const periodCoeffsMap = new Map();
@@ -42,41 +52,33 @@ const TradingGame = () => {
       .catch(console.error);
   }, []);
 
-  // ── Helpers & Random Coeffs ─────────────────────────────
-  const generateRandomCoeffs = () => ({
-    // amplitude ∈ [1.0, 1.8] instead of [1.0,2.0]
-    amp: Math.random() * 0.8 + 1.0,
-    c1: Math.random() * 2 - 1,
-    c2: Math.random() * 2 - 1,
-    c3: Math.random() * 2 - 1,
-    shift: Math.random() * 0.4 - 0.2
-  });
-
 //   useEffect(() => {
 //     if (!randomCoeffs) setRandomCoeffs(generateRandomCoeffs());
 //   }, [randomCoeffs]);
 
   const functions = {
     random_combination: {
-      name: 'Random Combination',
-      func: x => {
-        // pick the coeffs specific to THIS 2π‐period
-        const { amp, c1, c2, c3, shift } = getCoeffsForX(x);
-        return amp * (
-          c1 * (Math.sin(x) - 0.5) +
-          c2 * (0.6 * Math.sin(x) + 0.4 * Math.sin(2*x) - 0.3) +
-          c3 * (Math.sin(x) + 0.3 * Math.sin(3*x) - 0.4)
-        ) + shift;
-      },
-      color: '#9333ea',
-      expectedValue: randomCoeffs
-        ? randomCoeffs.amp * (
-            randomCoeffs.c1 * -0.5 +
-            randomCoeffs.c2 * -0.3 +
-            randomCoeffs.c3 * -0.4
-          ) + randomCoeffs.shift
-        : -0.4
-    },
+        name: 'Random Combination',
+        func: x => {
+            // pull the unique coeffs for the current 2π‐period
+            const { amp, c1, c2, c3, shift } = getCoeffsForX(x);
+            return amp * (
+            c1 * (Math.sin(x) - 0.5) +
+            c2 * (0.6 * Math.sin(x) + 0.4 * Math.sin(2*x) - 0.3) +
+            c3 * (Math.sin(x) + 0.3 * Math.sin(3*x) - 0.4)
+            ) + shift;
+        },
+        color: '#9333ea',
+        // derive a theoretical expected value at x = 0 for display
+        expectedValue: (() => {
+            const { amp, c1, c2, c3, shift } = getCoeffsForX(0);
+            return amp * (
+            c1 * -0.5 +
+            c2 * -0.3 +
+            c3 * -0.4
+            ) + shift;
+        })()
+        },
     shifted_sine: {
       name: 'Shifted Sine',
       func: x => Math.sin(x) - 0.5,
@@ -467,13 +469,17 @@ const TradingGame = () => {
               Theoretical win rate: ~
               {((1 + functions[selectedFunction].expectedValue) * 50).toFixed(1)}%
             </div>
-            {selectedFunction === 'random_combination' && randomCoeffs && (
-              <div className="text-xs text-gray-600 mt-1">
-                Amp: {randomCoeffs.amp.toFixed(2)}, Coeffs: [
-                {randomCoeffs.c1.toFixed(2)}, {randomCoeffs.c2.toFixed(2)},{' '}
-                {randomCoeffs.c3.toFixed(2)}]
-              </div>
-            )}
+              {selectedFunction === 'random_combination' && (
+                (() => {
+                    const { amp, c1, c2, c3 } = getCoeffsForX(0);
+                    return (
+                    <div className="text-xs text-gray-600 mt-1">
+                        Amp: {amp.toFixed(2)}, Coeffs: [
+                        {c1.toFixed(2)}, {c2.toFixed(2)}, {c3.toFixed(2)}]
+                    </div>
+                    );
+                })()
+                )}
           </div>
         </div>
       </div>
