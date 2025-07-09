@@ -1,9 +1,20 @@
-'use client'
+    'use client'
 // components/TradingGame.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw, Settings } from 'lucide-react';
 
 const API = '/api/stats';
+
+// Map each completed 2π‐period index → its own random coeffs
+const periodCoeffsMap = new Map();
+/** Return a fresh coeff set for period index if not already generated */
+function getCoeffsForX(x) {
+  const periodIndex = Math.floor(x / (2 * Math.PI));
+  if (!periodCoeffsMap.has(periodIndex)) {
+    periodCoeffsMap.set(periodIndex, generateRandomCoeffs());
+  }
+  return periodCoeffsMap.get(periodIndex);
+}
 
 const TradingGame = () => {
   // ── State & Refs ────────────────────────────────────────
@@ -17,7 +28,7 @@ const TradingGame = () => {
   const [animationTime, setAnimationTime] = useState(0);
   const [animationSpeed, setAnimationSpeed] = useState(1);
   const [showSettings, setShowSettings] = useState(false);
-  const [randomCoeffs, setRandomCoeffs] = useState(null);
+  //const [randomCoeffs, setRandomCoeffs] = useState(null);
 
   const canvasRef = useRef(null);
   const gameTimerRef = useRef(null);
@@ -33,23 +44,24 @@ const TradingGame = () => {
 
   // ── Helpers & Random Coeffs ─────────────────────────────
   const generateRandomCoeffs = () => ({
-    amp: Math.random() * 1.0 + 1.0,
+    // amplitude ∈ [1.0, 1.8] instead of [1.0,2.0]
+    amp: Math.random() * 0.8 + 1.0,
     c1: Math.random() * 2 - 1,
     c2: Math.random() * 2 - 1,
     c3: Math.random() * 2 - 1,
     shift: Math.random() * 0.4 - 0.2
   });
 
-  useEffect(() => {
-    if (!randomCoeffs) setRandomCoeffs(generateRandomCoeffs());
-  }, [randomCoeffs]);
+//   useEffect(() => {
+//     if (!randomCoeffs) setRandomCoeffs(generateRandomCoeffs());
+//   }, [randomCoeffs]);
 
   const functions = {
     random_combination: {
       name: 'Random Combination',
       func: x => {
-        if (!randomCoeffs) return 0;
-        const { amp, c1, c2, c3, shift } = randomCoeffs;
+        // pick the coeffs specific to THIS 2π‐period
+        const { amp, c1, c2, c3, shift } = getCoeffsForX(x);
         return amp * (
           c1 * (Math.sin(x) - 0.5) +
           c2 * (0.6 * Math.sin(x) + 0.4 * Math.sin(2*x) - 0.3) +
@@ -319,7 +331,7 @@ const TradingGame = () => {
           </select>
           {selectedFunction === 'random_combination' && (
             <button
-              onClick={() => setRandomCoeffs(generateRandomCoeffs())}
+              onClick={() => periodCoeffsMap.clear()}
               className="px-2 py-1 text-xs bg-purple-500 text-white rounded hover:bg-purple-600"
               disabled={gameState === 'active'}
             >
