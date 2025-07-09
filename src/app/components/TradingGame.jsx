@@ -1,3 +1,4 @@
+'use client'
 // components/TradingGame.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw, Settings } from 'lucide-react';
