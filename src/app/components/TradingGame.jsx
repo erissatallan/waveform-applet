@@ -472,7 +472,7 @@ const TradingGame = () => {
           <li>• The wave continuously moves from right to left</li>
           <li>• Click anywhere on the graph to enter a trade at the rightmost point</li>
           <li>
-            • You win if the value is positive after {defaultTime} seconds (f(x+10) > 0)
+            • You win if the value is positive after {defaultTime} seconds (f(x+10) &gt 0)
           </li>
           <li>• The blue/red dot shows your entry point at the right edge</li>
           <li>• Green areas are above zero (winning), red areas are below zero (losing)</li>
